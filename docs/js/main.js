@@ -3,13 +3,15 @@ var eventLevels;
 var eventCodeNames;
 var eventL1Codes;
 var eventL1CodeNames;
-var streamGraphData;
 var countryCodes;
 var countryCodeNames;
 var reversedCountryCodes;
+var goldsteinData;
+
+var streamGraphData;
 var sunburstChartData;
 
-var goldsteinData;
+
 const itemColorRange = {
     '01': '#1f77b4',
     '02': '#aec7e8',
@@ -40,9 +42,38 @@ function gdColorRange(event) {
     }
 }
 
+function initCharts() {
 
+    // draw everything
+    let drawStreamGraph = initStreamGraph();
+    let drawSunburstChart = initSunburstChart();
 
-$(document).ready(function() {
+    function updateGraphs(){
+        let country1Code = reversedCountryCodes[$('#streamGraphBtn1').val()];
+        let country2Code = reversedCountryCodes[$('#streamGraphBtn2').val()];
+        drawStreamGraph(country1Code + ',' + country2Code);
+        drawSunburstChart(country1Code + ',' + country2Code);
+    }
+
+    function initSelect(selectInd) {
+        d3.select(selectInd).selectAll('option')
+            .data(countryCodeNames).enter()
+            .append('option')
+            .text(function(d) {
+                return countryCodes[d];
+            });
+        $(selectInd).on('changed.bs.select', updateGraphs);
+    }
+
+    initSelect('#streamGraphBtn1');
+    initSelect('#streamGraphBtn2');
+    $('.selectpicker').selectpicker('refresh');
+
+    updateGraphs();
+
+}
+
+(function() {
     d3.queue()
         .defer(d3.tsv, "data/event_code.tsv")
         .defer(d3.tsv, "data/country_code.tsv")
@@ -53,6 +84,7 @@ $(document).ready(function() {
             if (error) {
                 console.error('Oh dear, something went wrong: ' + error);
             } else {
+
                 // read countryCodes
                 countryCodes = {};
                 reversedCountryCodes = {};
@@ -97,29 +129,19 @@ $(document).ready(function() {
                 }
                 console.log('eventCodes', eventCodes);
                 console.log('eventL1Codes', eventL1Codes);
-                console.log('eventL1CodeNames');
-                console.log(eventL1CodeNames);
-
+                console.log('eventL1CodeNames', eventL1CodeNames);
                 console.log('eventLevels', eventLevels);
+
                 // read stream_graph_data
                 streamGraphData = {};
                 let stream_data = d3.tsv.parseRows(stream_text);
                 for (let ind in stream_data) {
                     let record = stream_data[ind];
-                    let date = record[0];
                     let countryPair = record[1] + ',' + record[2];
-                    let counts = record.slice(3, 23);
                     if (!(countryPair in streamGraphData)) {
                         streamGraphData[countryPair] = [];
                     }
-                    for (let cind in counts) {
-                        streamGraphData[countryPair].push({
-                            key: eventL1CodeNames[cind],
-                            value: parseInt(counts[cind]),
-                            // check if moment works well for month / date
-                            date: moment(date, 'YYYY')._d
-                        })
-                    }
+                    streamGraphData[countryPair].push(record);
                 }
                 // console.log('streamGraphData', streamGraphData);
 
@@ -129,28 +151,10 @@ $(document).ready(function() {
                 for (let ind in sunburst_data) {
                     let record = sunburst_data[ind];
                     let countryPair = record[0] + ',' + record[1];
-                    let counts = record.slice(2);
-                    if (!(countryPair in sunburstChartData)) {
-                        sunburstChartData[countryPair] = [];
-                    }
-                    for (let cind in counts) {
-                        let eventCode = eventCodeNames[cind];
-                        if (!(eventCode in eventL1Codes)) {
-                            let str = '';
-                            for (let lind = 1; lind <= eventLevels[eventCode]; lind++) {
-                                if (lind !== 1) str += '-';
-                                str += eventCode.substr(0, lind + 1);
-                            }
-                            sunburstChartData[countryPair].push([
-                                str,
-                                parseInt(counts[cind]),
-                            ])
-                        }
-                    }
+                    sunburstChartData[countryPair] = record;
                 }
 
                 console.log('sunburstChartData', sunburstChartData);
-
 
                 // goldstein
                 goldsteinData = {}
@@ -165,37 +169,4 @@ $(document).ready(function() {
                 initCharts();
             }
         });
-});
-
-
-function initCharts() {
-
-    // draw everything
-    let drawStreamGraph = initStreamGraph();
-    let drawSunburstChart = initSunburstChart();
-
-    function updateGraphs(){
-        let country1Code = reversedCountryCodes[$('#streamGraphBtn1').val()];
-        let country2Code = reversedCountryCodes[$('#streamGraphBtn2').val()];
-        drawStreamGraph(country1Code + ',' + country2Code);
-        drawSunburstChart(country1Code + ',' + country2Code);
-        // drawStreamGraph('CHN,USA');
-    }
-
-    function initSelect(selectInd) {
-        d3.select(selectInd).selectAll('option')
-            .data(countryCodeNames).enter()
-            .append('option')
-            .text(function(d) {
-                return countryCodes[d];
-            });
-        $(selectInd).on('changed.bs.select', updateGraphs);
-    }
-
-    initSelect('#streamGraphBtn1');
-    initSelect('#streamGraphBtn2');
-    $('.selectpicker').selectpicker('refresh');
-
-    updateGraphs();
-
-}
+})();

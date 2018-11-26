@@ -1,5 +1,31 @@
+// reference:
+// https://bl.ocks.org/kerryrodden/7090426
+
 var sunburstInd = '#sunburstChart';
 
+function parseSunburstData(countryPair) {
+    let output = [];
+    if ( ! (countryPair in sunburstChartData))
+        return output;
+
+    let record = sunburstChartData[countryPair];
+    let counts = record.slice(2);
+    for (let cind in counts) {
+        let eventCode = eventCodeNames[cind];
+        if (!(eventCode in eventL1Codes)) {
+            let str = '';
+            for (let lind = 1; lind <= eventLevels[eventCode]; lind++) {
+                if (lind !== 1) str += '-';
+                str += eventCode.substr(0, lind + 1);
+            }
+            output.push([
+                str,
+                parseInt(counts[cind]),
+            ])
+        }
+    }
+    return output;
+}
 
 function initSunburstChart() {
     // Dimensions of sunburst.
@@ -45,6 +71,44 @@ function initSunburstChart() {
             return Math.sqrt(d.y + d.dy);
         });
 
+    function drawLegend() {
+
+        // Dimensions of legend item: width, height, spacing, radius of rounded rect.
+        let li = {
+            w: 75, h: 30, s: 3, r: 3
+        };
+
+        let legend = d3.select("#legend").append("svg:svg")
+            .attr("width", li.w)
+            .attr("height", d3.keys(itemColorRange).length * (li.h + li.s));
+
+        let g = legend.selectAll("g")
+            .data(d3.entries(itemColorRange))
+            .enter().append("svg:g")
+            .attr("transform", function (d, i) {
+                return "translate(0," + i * (li.h + li.s) + ")";
+            });
+
+        g.append("svg:rect")
+            .attr("rx", li.r)
+            .attr("ry", li.r)
+            .attr("width", li.w)
+            .attr("height", li.h)
+            .style("fill", function (d) {
+                return d.value;
+            });
+
+        g.append("svg:text")
+            .attr("x", li.w / 2)
+            .attr("y", li.h / 2)
+            .attr("dy", "0.35em")
+            .attr("text-anchor", "middle")
+            .text(function (d) {
+                return d.key;
+            });
+    }
+    drawLegend();
+
     // Use d3.text and d3.csv.parseRows so that we do not need to have a header
     // row, and can receive the csv as an array of arrays.
 
@@ -54,11 +118,10 @@ function initSunburstChart() {
         vis.selectAll('path').remove();
 
         // todo: remove previous elements
-        json = buildHierarchy(sunburstChartData[countryPair]);
+        let json = buildHierarchy(parseSunburstData(countryPair));
 
         // Basic setup of page elements.
         initializeBreadcrumbTrail();
-        drawLegend();
         d3.select("#togglelegend").on("click", toggleLegend);
 
         // Bounding circle underneath the sunburst, to make it easier to detect
@@ -242,42 +305,7 @@ function initSunburstChart() {
 
     }
 
-    function drawLegend() {
 
-        // Dimensions of legend item: width, height, spacing, radius of rounded rect.
-        let li = {
-            w: 75, h: 30, s: 3, r: 3
-        };
-
-        let legend = d3.select("#legend").append("svg:svg")
-            .attr("width", li.w)
-            .attr("height", d3.keys(itemColorRange).length * (li.h + li.s));
-
-        let g = legend.selectAll("g")
-            .data(d3.entries(itemColorRange))
-            .enter().append("svg:g")
-            .attr("transform", function (d, i) {
-                return "translate(0," + i * (li.h + li.s) + ")";
-            });
-
-        g.append("svg:rect")
-            .attr("rx", li.r)
-            .attr("ry", li.r)
-            .attr("width", li.w)
-            .attr("height", li.h)
-            .style("fill", function (d) {
-                return d.value;
-            });
-
-        g.append("svg:text")
-            .attr("x", li.w / 2)
-            .attr("y", li.h / 2)
-            .attr("dy", "0.35em")
-            .attr("text-anchor", "middle")
-            .text(function (d) {
-                return d.key;
-            });
-    }
 
     function toggleLegend() {
         let legend = d3.select("#legend");

@@ -2,6 +2,27 @@
 // https://bl.ocks.org/HarryStevens/raw/c893c7b441298b36f4568bc09df71a1e/
 
 
+function parseStreamData(countryPair) {
+    let output = [];
+    if ( !(countryPair in streamGraphData))
+        return output;
+    let data = streamGraphData[countryPair];
+    for (let ind in data) {
+        let record = data[ind];
+        let date = record[0];
+        let counts = record.slice(3, 23);
+        for (let cind in counts) {
+            output.push({
+                key: eventL1CodeNames[cind],
+                value: parseInt(counts[cind]),
+                // check if moment works well for month / date
+                date: moment(date, 'YYYY')._d
+            })
+        }
+    }
+    return output;
+}
+
 var chartInd = '.stream.chart';
 var yearInterval = 1;
 
@@ -169,14 +190,9 @@ function initStreamGraph() {
         svg.selectAll("g").remove();
         svg.selectAll("rect").remove();
 
-        let data;
-        if (!(countryPair in streamGraphData)) {
-            data = [];
-        } else {
-            data = streamGraphData[countryPair];
-        }
-        // now we call the data, as the rest of the code is dependent upon data
+        let data = parseStreamData(countryPair);
 
+        // now we call the data, as the rest of the code is dependent upon data
         // generate our layers
         var layers = stack(nest.entries(data));
 

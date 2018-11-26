@@ -1,12 +1,8 @@
 .inlineTwoBlock {
     display: inline-block;
 }
-#streamChart {
-    height: max-content;
-    width: 100%;
-}
 
-#sunburstChart {
-    width: 100%;
+.topModule{
     height: max-content;
+    width: 100%;
 }
