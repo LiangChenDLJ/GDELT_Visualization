@@ -29,7 +29,7 @@
 <!-- Navigation -->
 <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
     <div class="container">
-        <a class="navbar-brand" href="index.html">Start Bootstrap</a>
+        <a class="navbar-brand" href="index.html">GDELT</a>
         <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
             Menu
             <i class="fas fa-bars"></i>
@@ -39,6 +39,7 @@
                 <li class="nav-item">
                     <a class="nav-link" href="index.html">Home</a>
                 </li>
+                <!--
                 <li class="nav-item">
                     <a class="nav-link" href="about.html">About</a>
                 </li>
@@ -48,6 +49,7 @@
                 <li class="nav-item">
                     <a class="nav-link" href="contact.html">Contact</a>
                 </li>
+                -->
             </ul>
         </div>
     </div>
@@ -71,108 +73,215 @@
 <!-- Main Content -->
 <div class="container">
     <div class="row">
-        <div id="mapChart" class="topModule">
-            <div class='tableauPlaceholder' id='viz1543209552436' style='position: relative'><noscript><a href='#'><img alt=' ' src='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;ID&#47;IDS_team&#47;Sheet1&#47;1_rss.png' style='border: none' /></a></noscript><object class='tableauViz'  style='display:none;'><param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' /> <param name='embed_code_version' value='3' /> <param name='path' value='views&#47;IDS_team&#47;Sheet1?:embed=y&amp;:display_count=y&amp;publish=yes' /> <param name='toolbar' value='yes' /><param name='static_image' value='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;ID&#47;IDS_team&#47;Sheet1&#47;1.png' /> <param name='animate_transition' value='yes' /><param name='display_static_image' value='yes' /><param name='display_spinner' value='yes' /><param name='display_overlay' value='yes' /><param name='display_count' value='yes' /><param name='filter' value='publish=yes' /></object></div>                <script type='text/javascript'>                    var divElement = document.getElementById('viz1543209552436');                    var vizElement = divElement.getElementsByTagName('object')[0];                    vizElement.style.width='100%';vizElement.style.height=(divElement.offsetWidth*0.75)+'px';                    var scriptElement = document.createElement('script');                    scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';                    vizElement.parentNode.insertBefore(scriptElement, vizElement);                </script>
-        </div>
-        <div id="selectorPanel" class="topModule">
-            <div class="inlineTwoBlock">country 1
-                <select class="selectpicker streamGraphBtn" id="streamGraphBtn1">
-                </select>
+        <div class="card">
+            <div class="card-header">
+                Introduction
             </div>
-            <div  class="inlineTwoBlock">country 2
-                <select class="selectpicker streamGraphBtn" id="streamGraphBtn2">
-                </select>
+            <div class="card-body">
+                <div>
+                    This website is a data platform where people can explore the relationship between one country and another and understand their relationship on a fine-grained level. We accomplish this by utilizing the GDELT dataset, which monitors the world's news in different channels (broadcast, print, web news, etc.) from every corner of the globe in the last 40 years and identifies the people, locations, organizations, themes, sources, emotions, counts, quotes, images and events driving our global society every second of every day. We accumulate all the news into the following graphs to help you better understand the relationships between countries.
+                    <br/>
+                    <br/>
+                    The GDELT dataset is well documented and very accountable because it is directly supported by Google. The dataset is not quite complete because we are living in an era where information explodes exponentially throughout time so there is much more news coverage today than 40 years ago. This can be shown from the size of dataset where the past ten years made up almost 4GB compared to the 30 years before that made up only 1GB. That's why we will focus on the past 10 years. The dataset is mostly correct except for a couple of malformed entry fields of event types. The dataset is also coherent as can be illustrated by the following more in-depth analysis of the dataset which should make a lot of sense.
+                    <br/>
+                    <br/>
+                    We will present here an illustration of a potential in-depth analysis done on this dataset between China and the United States. Users of this platform can of course explore relationships between other pairs of countries.
+                </div>
             </div>
         </div>
-        <div id="streamChart" class="container-fluid topModule">
-            <div class="row">
-                <div class="col-md-12">
+        <br/>
+        <div class="card" style='width:100%'>
+            <div class="card-header">
+                Map
+            </div>
+            <div class="card-body" style='width:100%'>
+                <div id="mapChart" class="topModule">
+                    <div class='tableauPlaceholder' id='viz1543209552436' style='position: relative; width:100%'>
+                        <noscript>
+                            <a href='#'>
+                                <img alt=' ' src='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;ID&#47;IDS_team&#47;Sheet1&#47;1_rss.png' style='border: none' />
+                            </a>
+                        </noscript>
+                        <object class='tableauViz'  style='display:none;'>
+                            <param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' />
+                            <param name='embed_code_version' value='3' />
+                            <param name='path' value='views&#47;IDS_team&#47;Sheet1?:embed=y&amp;:display_count=y&amp;publish=yes' />
+                            <param name='toolbar' value='yes' />
+                            <param name='static_image' value='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;ID&#47;IDS_team&#47;Sheet1&#47;1.png' />
+                            <param name='animate_transition' value='yes' />
+                            <param name='display_static_image' value='yes' />
+                            <param name='display_spinner' value='yes' />
+                            <param name='display_overlay' value='yes' />
+                            <param name='display_count' value='yes' />
+                            <param name='filter' value='publish=yes' />
+                        </object></div>
+                    <script type='text/javascript'>
+                        var divElement = document.getElementById('viz1543209552436');
+                        var vizElement = divElement.getElementsByTagName('object')[0];
+                        vizElement.style.width='100%';vizElement.style.height=(divElement.offsetWidth*0.75)+'px';
+                        var scriptElement = document.createElement('script');
+                        scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';
+                        vizElement.parentNode.insertBefore(scriptElement, vizElement);
+                    </script>
+                </div>
+                <div>
+                    Let's first look at what we can get out of the first interactive graph. This graph tells us the number of negative or repressive events happened between two countries in the entire dataset. In addition we have calculated an aggregate "evaluation score" between a pair of countries based on the following formula: Evaluation = Goldstein scale * number of mentions in all media * |average tone of media coverage|. The Goldstein scale is a numeric score from -10 to +10 assigned to each type of news event to evaluate the net effect of that event on inter-country relationship.
+                    <br/>
+                    <br/>
+                    Let's first select China in the Country tab and choose Evaluation in Value Type tab. We can see that China develops strong relationship with many countries including the US, Russia, UK, Australia, etc. Among these the US is the one country that has the strongest and most positive relationship with China. This is a direct result of the multi-facet economic colaboration between the two largest economies of the world in the past ten years. These economic activities along with the constant cultural communication between China and US generated huge amount of news report and media coverage and has high benefit to improve the relationship between China and the US, hence the high evaluation score. If we select the US in the country tab, we would observe the same result.
+                    <br/>
+                    <br/>
+                    However, by selecting the "Event Count" option, we can also see that there has been negative events happening between China and the US, and the number of negative events is an astonishing 38,064 from China to the US, and 35,666 from the US to China. This shows that despite a seemingly good relationship between China and the US, there has been many controversies between the two countries. Let's move on to the second interactive graph to look at a more fine-grained event count between China and the US to better understand their relationship on a more fine-graned level.
+                </div>
+            </div>
+        </div>
+        <br/>
+        <div class="card" style='width:100%'>
+            <div class="card-header">
+                Country Selector (for the following two graphs)
+            </div>
+            <div class="card-body">
+                <div id="selectorPanel" class="topModule">
+                    <div class="inlineTwoBlock">country 1
+                        <select class="selectpicker streamGraphBtn" id="streamGraphBtn1">
+                        </select>
+                    </div>
+                    <div  class="inlineTwoBlock">country 2
+                        <select class="selectpicker streamGraphBtn" id="streamGraphBtn2">
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br/>
+        <div class="card">
+            <div class="card-header">
+                Stream Graph
+            </div>
+            <div class="card-body">
+                <div id="streamChart" class="container-fluid topModule">
                     <div class="row">
-                        <div class="chart-wrapper col-md-12">
-                            <div class="stream chart"></div>
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="chart-wrapper col-md-12">
+                                    <div class="stream chart"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        <div id="sunburstChart" class="container-fluid topModule">
-            <div id="main">
-                <div id="sequence"></div>
-                <div id="chart">
-                    <div id="explanation" style="visibility: hidden;">
-                        <span id="percentage"></span>
-                        <br/>
-                        <div id="number"></div>
-                        <div id="description"></div>
-                    </div>
+                <div>
+                    In this graph, users can select two countries and see the number of event types happened between the two countries over time. The events are classified into 20 different categories and are sorted based on their effect on relationship. The events towards the top are positive and constructive events, while the events towards the bottom are negative and destructive events.
+                    <br/>
+                    <br/>
+                    To continue our illustration of analyzing China and the US, lets select China and the US in the country1 and country2 tabs. Over time, we can see that there has been exponentially more and more communication and cooperation between the US and China up until 2016, when Trump became the new president of the US. After Trump became the new president, the cooperation between China and the US has gone down as we can see from the graph that the positive events are decreasing after 2016, especially the "express intent to cooperate" and "consult", meaning that there are fewer and fewer cooperations between the two largest economies in the world. The negative events, however, has remained at the same level each year, showing that the level of controversies and conflicts between the two countries have not been properly addressed. This should be an alarm to the leaders of China and the US.
                 </div>
             </div>
-            <div id="sidebar">
-                <input type="checkbox" id="togglelegend"> Legend<br/>
-                <div id="legend" style="visibility: hidden;"></div>
+        </div>
+        <br/>
+        <div class="card">
+            <div class="card-header">
+                Sunburst Chart
+            </div>
+            <div class="card-body">
+                <div id="sunburstChart" class="container-fluid topModule" style="display: table">
+                    <div id="main">
+                        <div id="sequence"></div>
+                        <div id="chart">
+                            <div id="explanation" style="visibility: hidden;">
+                                <span id="percentage"></span>
+                                <br/>
+                                <div id="number"></div>
+                                <div id="description"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="sidebar">
+                        <input type="checkbox" id="togglelegend"> Legend<br/>
+                        <div id="legend" style="visibility: hidden;"></div>
+                    </div>
+                </div>
+                <div>
+                    In this graph, users will see an even more fine-grained event count between the two previously selected countries aggregated over time. In GDELT dataset, all events are classified into a three-level hierarchy. This graph will allow for a more statistical analysis of the country relationships.
+                    <br/>
+                    <br/>
+                    Continuing the previous analysis. We will now compare the China-US relationship with the China-Russia relationship using graph 3.
+                    <br/>
+                    <br/>
+                    Overall, we can see that the China-Russia relation involves more positive interactions and beneficial communications than the China-US relation. The China-US relation, on the other hand, involves more conflicts and destructive acitivities. For example, China is 48.7% more likely to have a military conflict with the US than with Russia, probably due to controversies over the South China Sea and the Senkaku Islands. Furthermore it Russian has 9.1% higher percentage of events that are cooperation. It is interesting to note that China has higher percentage of "economic cooperation" events with the US than with Russia (3.84% with US vs 3.15%with Russia), but significantly more percentage of "political cooperations" events with Russia than with the US (18.9% with Russia vs 9.78% with US). This is easy to understand as China are Russia are geopolitical allies whereas China and the US are mutually the most important economic partner.
+                </div>
             </div>
         </div>
-        <div class="col-lg-8 col-md-10 mx-auto">
-            <!--
-            <div class="post-preview">
-                <a href="post.html">
-                    <h2 class="post-title">
-                        Man must explore, and this is exploration at its greatest
-                    </h2>
-                    <h3 class="post-subtitle">
-                        Problems look mighty small from 150 miles up
-                    </h3>
-                </a>
-                <p class="post-meta">Posted by
-                    <a href="#">Start Bootstrap</a>
-                    on September 24, 2018</p>
+        <br/>
+        <div class="card">
+            <div class="card-header">
+                Potential Research Question
             </div>
-            <hr>
-            <div class="post-preview">
-                <a href="post.html">
-                    <h2 class="post-title">
-                        I believe every human has a finite number of heartbeats. I don't intend to waste any of mine.
-                    </h2>
-                </a>
-                <p class="post-meta">Posted by
-                    <a href="#">Start Bootstrap</a>
-                    on September 18, 2018</p>
+            <div class="card-body">
+                We want to further explore this dataset to find out the most predictive features of inter-country relationship and use a trend analysis to predict inter-country relationships in the future. Our proposed plan is to use several Machine Learning techniques including feature selection, dimensionality reduction and cluster analysis to derive compact representation of each country's position in the world political environment, and then uses a proper interpolation to plot what the world would look like in the years to come. At the end, we would produce the fourth graph which allows users to see how good of a relationship would a selected pair of countries have at a specified time in the future.
             </div>
-            <hr>
-            <div class="post-preview">
-                <a href="post.html">
-                    <h2 class="post-title">
-                        Science has not yet mastered prophecy
-                    </h2>
-                    <h3 class="post-subtitle">
-                        We predict too much for the next year and yet far too little for the next ten.
-                    </h3>
-                </a>
-                <p class="post-meta">Posted by
-                    <a href="#">Start Bootstrap</a>
-                    on August 24, 2018</p>
-            </div>
-            <hr>
-            <div class="post-preview">
-                <a href="post.html">
-                    <h2 class="post-title">
-                        Failure is not an option
-                    </h2>
-                    <h3 class="post-subtitle">
-                        Many say exploration is part of our destiny, but it’s actually our duty to future generations.
-                    </h3>
-                </a>
-                <p class="post-meta">Posted by
-                    <a href="#">Start Bootstrap</a>
-                    on July 8, 2018</p>
-            </div>
-            <hr>
-            -->
-            <!-- Pager -->
+        </div>
+        <!--
+                <div class="col-lg-8 col-md-10 mx-auto">
+
+                    <div class="post-preview">
+                        <a href="post.html">
+                            <h2 class="post-title">
+                                Man must explore, and this is exploration at its greatest
+                            </h2>
+                            <h3 class="post-subtitle">
+                                Problems look mighty small from 150 miles up
+                            </h3>
+                        </a>
+                        <p class="post-meta">Posted by
+                            <a href="#">Start Bootstrap</a>
+                            on September 24, 2018</p>
+                    </div>
+                    <hr>
+                    <div class="post-preview">
+                        <a href="post.html">
+                            <h2 class="post-title">
+                                I believe every human has a finite number of heartbeats. I don't intend to waste any of mine.
+                            </h2>
+                        </a>
+                        <p class="post-meta">Posted by
+                            <a href="#">Start Bootstrap</a>
+                            on September 18, 2018</p>
+                    </div>
+                    <hr>
+                    <div class="post-preview">
+                        <a href="post.html">
+                            <h2 class="post-title">
+                                Science has not yet mastered prophecy
+                            </h2>
+                            <h3 class="post-subtitle">
+                                We predict too much for the next year and yet far too little for the next ten.
+                            </h3>
+                        </a>
+                        <p class="post-meta">Posted by
+                            <a href="#">Start Bootstrap</a>
+                            on August 24, 2018</p>
+                    </div>
+                    <hr>
+                    <div class="post-preview">
+                        <a href="post.html">
+                            <h2 class="post-title">
+                                Failure is not an option
+                            </h2>
+                            <h3 class="post-subtitle">
+                                Many say exploration is part of our destiny, but it’s actually our duty to future generations.
+                            </h3>
+                        </a>
+                        <p class="post-meta">Posted by
+                            <a href="#">Start Bootstrap</a>
+                            on July 8, 2018</p>
+                    </div>
+                    <hr>
             <div class="clearfix">
                 <a class="btn btn-primary float-right" href="#">Older Posts &rarr;</a>
             </div>
         </div>
+        -->
     </div>
 </div>
 
@@ -183,6 +292,7 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-8 col-md-10 mx-auto">
+                <!--
                 <ul class="list-inline text-center">
                     <li class="list-inline-item">
                         <a href="#">
@@ -209,7 +319,8 @@
                         </a>
                     </li>
                 </ul>
-                <p class="copyright text-muted">Copyright &copy; Your Website 2018</p>
+                -->
+                <p class="copyright text-muted">Copyright &copy; Chen 2018</p>
             </div>
         </div>
     </div>

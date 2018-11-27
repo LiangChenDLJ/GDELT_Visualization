@@ -1,6 +1,3 @@
-// reference:
-// https://bl.ocks.org/kerryrodden/7090426
-
 var sunburstInd = '#sunburstChart';
 
 function parseSunburstData(countryPair) {
