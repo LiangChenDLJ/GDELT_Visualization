@@ -7,40 +7,33 @@ var countryCodes;
 var countryCodeNames;
 var reversedCountryCodes;
 var goldsteinData;
+var subEventCount;
 
 var streamGraphData;
 var sunburstChartData;
 
-
-const itemColorRange = {
-    '01': '#1f77b4',
-    '02': '#aec7e8',
-    '03': '#ff7f0e',
-    '04': '#ffbb78',
-    '05': '#2ca02c',
-    '06': '#98df8a',
-    '07': '#d62728',
-    '08': '#ff9896',
-    '09': '#9467bd',
-    '10': '#c5b0d5',
-    '11': '#8c564b',
-    '12': '#c49c94',
-    '13': '#e377c2',
-    '14': '#f7b6d2',
-    '15': '#7f7f7f',
-    '16': '#c7c7c7',
-    '17': '#bcbd22',
-    '18': '#dbdb8d',
-    '19': '#000000',  // special color for conflicts
-    '20': '#9edae5',
+var itemColorRange = {
+    '01': "#800000",
+    '02': "#9A6324",
+    '03': "#808000",
+    '04': "#469990",
+    '05': "#000075",
+    '06': "#444444",
+    '07': "#E6194B",
+    '08': "#F58231",
+    '09': "#FFE119",
+    '10': "#BFEF45",
+    '11': "#3CB44B",
+    '12': "#42D4F4",
+    '13': "#4363D8",
+    '14': "#911EB4",
+    '15': "#F032E6",
+    '16': "#A9A9A9",
+    '17': "#FABEBE",
+    '18': "#FFD8B1",
+    '19': "#FFFAC8",
+    '20': "#AAFFC3"
 };
-function gdColorRange(event) {
-    if (event in goldsteinData) {
-        return d3.interpolateRdBu((goldsteinData[event] + 10) / 20);
-    } else {
-        return itemColorRange[event];
-    }
-}
 
 function initCharts() {
 
@@ -106,6 +99,7 @@ function initCharts() {
                 eventLevels = {};
                 eventL1Codes = {};
                 eventL1CodeNames = [];
+                subEventCount = {};
                 //eventL2CodeNames = [];
                 for (let ind in event_code) {
                     let event = event_code[ind];
@@ -116,6 +110,7 @@ function initCharts() {
                     if (eventCode.length <= 2) {
                         eventL1Codes[eventCode] = eventDescription;
                         eventL1CodeNames.push(eventCode);
+                        subEventCount[eventCode] = 0;
                     }// else {
                     //    eventL2CodeNames.push(eventCode);
                     //}
@@ -125,6 +120,9 @@ function initCharts() {
                         eventLevels[eventCode] = 3;
                     } else {
                         eventLevels[eventCode] = eventCode.length - 1;
+                    }
+                    if (eventLevels[eventCode] > 1) {
+                        subEventCount[eventCode.substring(0,2)] += 1;
                     }
                 }
                 console.log('eventCodes', eventCodes);
@@ -157,7 +155,7 @@ function initCharts() {
                 console.log('sunburstChartData', sunburstChartData);
 
                 // goldstein
-                goldsteinData = {}
+                goldsteinData = {};
                 let goldstein_data = d3.tsv.parseRows(goldstein_text);
 
                 for (let ind in goldstein_data) {

@@ -1,5 +1,25 @@
 var sunburstInd = '#sunburstChart';
 
+var Color = net.brehaut.Color;
+
+function gdColorRange(event) {
+    if (event === "root") {
+        return NaN;
+    }
+    if (event in itemColorRange) {
+        return itemColorRange[event];
+    } else {
+        let baseEvent = event.substring(0,2);
+        let baseEventCount = subEventCount[baseEvent];
+        let baseColor = Color(itemColorRange[baseEvent]);
+        let ratio = (parseInt(event.substring(2)) % baseEventCount) / baseEventCount;
+        console.log(event);
+        console.log(ratio);
+        let turnedColor = baseColor.lightenByRatio(ratio);
+        return turnedColor.toString();
+    }
+}
+
 function parseSunburstData(countryPair) {
     let output = [];
     if ( ! (countryPair in sunburstChartData))
