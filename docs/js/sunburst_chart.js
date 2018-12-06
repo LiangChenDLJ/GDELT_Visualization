@@ -13,8 +13,6 @@ function gdColorRange(event) {
         let baseEventCount = subEventCount[baseEvent];
         let baseColor = Color(itemColorRange[baseEvent]);
         let ratio = (parseInt(event.substring(2)) % baseEventCount) / baseEventCount;
-        console.log(event);
-        console.log(ratio);
         let turnedColor = baseColor.lightenByRatio(ratio);
         return turnedColor.toString();
     }

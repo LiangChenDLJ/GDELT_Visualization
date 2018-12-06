@@ -1,12 +1,20 @@
 // reference:
 // https://bl.ocks.org/HarryStevens/raw/c893c7b441298b36f4568bc09df71a1e/
 
+var fadingFactor = 0.2;
+
+function getStreamData(countryPair) {
+    if ( !(countryPair in streamGraphData))
+        return [];
+    return streamGraphData[countryPair];
+}
 
 function parseStreamData(countryPair) {
+    let data = getStreamData(countryPair);
     let output = [];
-    if ( !(countryPair in streamGraphData))
-        return output;
-    let data = streamGraphData[countryPair];
+    data.sort(function(a, b){
+        return a[0] - b[0];
+    });
     for (let ind in data) {
         let record = data[ind];
         let date = record[0];
@@ -16,7 +24,30 @@ function parseStreamData(countryPair) {
                 key: eventL1CodeNames[cind],
                 value: parseInt(counts[cind]),
                 // check if moment works well for month / date
-                date: moment(date, 'YYYY')._d
+                date: moment(date, 'YYYY')._d,
+            })
+        }
+    }
+    return output;
+}
+
+function parseLineData(countryPair) {
+    let data = getStreamData(countryPair);
+    let output = [];
+    for (let i = 0; i < 20; i++) {
+        output.push({
+            data: [],
+            event: parseInt(i + 1).toString().padStart(2, "0")
+        });
+    }
+    for (let ind in data) {
+        let record = data[ind];
+        let date = record[0];
+        let counts = record.slice(3, 23);
+        for (let cind in counts) {
+            output[cind].data.push({
+                year: moment(date, 'YYYY')._d,
+                count: parseInt(counts[cind]),
             })
         }
     }
@@ -35,7 +66,7 @@ var breakpoint = breakCalc($(window).width());
 
 $(window).resize(function(){
     var breakpoint = breakCalc($(window).width());
-})
+});
 
 // change the height of the chart depending on the breakpoint
 function breakHeight(bp){
@@ -67,7 +98,7 @@ function tipX(x){
 
 function initStreamGraph() {
     // basic chart dimensions
-    var margin = {top: 20, right: 1, bottom: 30, left: 0};
+    var margin = {top: 20, right: 1, bottom: 30, left: 5};
     var width = $('.chart-wrapper').width() - margin.left - margin.right;
     var height = breakHeight(breakpoint) - margin.top - margin.bottom;
 
@@ -103,6 +134,7 @@ function initStreamGraph() {
         .scale(x)
         .orient("bottom")
         .ticks(d3.timeYears, yearInterval);
+
 
     // stacked layout. the order is reversed to get the largest value on top
     // if you change the order to inside-out, the streams get all mixed up and look cool
@@ -145,10 +177,9 @@ function initStreamGraph() {
 
     // generate a legend
     function legend(){
-
         let legendTitle = 'EventType';
 
-        $(chartInd).prepend('<div class="legend"><div class="title">'+legendTitle+'</div></div>');
+        $(chartInd).prepend('<div class="legend" style="visibility:hidden"><div class="title">'+legendTitle+'</div></div>');
         $('.legend').hide();
         var legend = []
         eventL1CodeNames.forEach(function(d,i){
@@ -173,6 +204,16 @@ function initStreamGraph() {
     // our legend is based on our layers
     legend();
 
+    d3.select("#streamTogglelegend").on("click", function(){
+        let legend = d3.select(chartInd).select(".legend");
+        if (legend.style("visibility") == "hidden") {
+            legend.style("visibility", "");
+        } else {
+            legend.style("visibility", "hidden");
+        }
+    });
+
+
     var vertical = d3.select(chartInd)
         .append("div")
         .attr("class", "remove")
@@ -191,6 +232,9 @@ function initStreamGraph() {
         svg.selectAll("rect").remove();
 
         let data = parseStreamData(countryPair);
+        let lineData =parseLineData(countryPair);
+
+
 
         // now we call the data, as the rest of the code is dependent upon data
         // generate our layers
@@ -234,15 +278,33 @@ function initStreamGraph() {
             return y;
         }
 
+        function focusOn(event) {
+            svg.selectAll(".layer").transition()
+                .duration(100)
+                .attr("opacity", function(d) {
+                    return d.key != event ? fadingFactor : 1;
+                })
+            svg.select("#lineChart").selectAll(".line").transition()
+                .duration(100)
+                .attr("opacity", function(d) {
+                    return d.event != event ? fadingFactor : 1;
+                })
+        }
+
+        function focusOff(event) {
+            svg.selectAll(".layer").transition()
+                .duration(100)
+                .attr("opacity", '1');
+            svg.select("#lineChart").selectAll(".line").transition()
+                .duration(100)
+                .attr("opacity", '1');
+        }
+
         svg.selectAll(".layer")
             .attr("opacity", 1)
             .on("mouseover", function(d, i) {
-                svg.selectAll(".layer").transition()
-                    .duration(100)
-                    .attr("opacity", function(d, j) {
-                        return j != i ? 0.6 : 1;
-                    })})
-            .on("mousemove", function(d, i) {
+                focusOn(d.key);
+            }).on("mousemove", function(d, i) {
 
                 var color = d3.select(this).style('fill'); // need to know the color in order to generate the swatch
 
@@ -263,9 +325,7 @@ function initStreamGraph() {
                 });
             })
             .on("mouseout", function(d, i) {
-                svg.selectAll(".layer").transition()
-                    .duration(100)
-                    .attr("opacity", '1');
+                focusOff(d.key);
                 tooltip.style("visibility", "hidden");
             });        // vertical line to help orient the user while exploring the streams
 
@@ -305,7 +365,45 @@ function initStreamGraph() {
             .attr('width', 0);
         t.select('line.guide')
             .attr('transform', 'translate(' + width + ', 0)');
+
+        // draw ling graph
+
+        let max = d3.max(lineData, function(d) {
+            return d3.max(d.data, function(dd){
+                return dd.count;
+            })
+        });
+
+        let liney = d3.scale.linear()
+            .domain([0, max])
+            .range([height-10, 0]);
+
+        let yAxis = d3.svg.axis()
+            .scale(liney)
+            .orient("right");
+
+        svg.append("g")
+            .attr("class","y axis")
+            .attr("transform", "translate(0, 10)")
+            .call(yAxis);
+        let line = d3.svg.line()
+            .x(function(d){ return x(d.year); })
+            .y(function(d){ return liney(d.count); })
+            .interpolate("linear");
+
+        svg.append('g').attr("id","lineChart")
+            .selectAll('path')
+            .data(lineData)
+            .enter()
+            .append("path")
+            .attr("class","line")
+            .attr("d", function(d){ return line(d.data); })
+            .attr('stroke', function(d) {
+                return itemColorRange[d.event];
+            });
     }
+
+
 
     return drawStreamGraph;
 }
