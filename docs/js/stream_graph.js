@@ -2,6 +2,8 @@
 // https://bl.ocks.org/HarryStevens/raw/c893c7b441298b36f4568bc09df71a1e/
 
 var fadingFactor = 0.2;
+var chartInd = '.stream.chart';
+var yearInterval = 1;
 
 function getStreamData(countryPair) {
     if ( !(countryPair in streamGraphData))
@@ -54,9 +56,6 @@ function parseLineData(countryPair) {
     return output;
 }
 
-var chartInd = '.stream.chart';
-var yearInterval = 1;
-
 function breakCalc(x){
     x <= 480 ? y = 'xs' : y = 'md';
     return y;
@@ -65,33 +64,36 @@ function breakCalc(x){
 var breakpoint = breakCalc($(window).width());
 
 $(window).resize(function(){
-    var breakpoint = breakCalc($(window).width());
+    breakpoint = breakCalc($(window).width());
 });
 
 // change the height of the chart depending on the breakpoint
 function breakHeight(bp){
-    bp == 'xs' ? y = 250 : y = 500;
-    return y;
-}
+    return 500;
 
+    // bp == 'xs' ? y = 250 : y = 500;
+    // return y;
+}
 
 // funciton to determine the century of the datapoint when displaying the tooltip
 function century(x){
     x<100 ? y = '19'+x : y = '20'+(x.toString().substring(1));
     return y;
 }
-
+/*
 // function to ensure the tip doesn't hang off the side
 function tipX(x){
-    var winWidth = $(window).width();
-    var tipWidth = $('.tip').width();
-    if (breakpoint == 'xs'){
-        x > winWidth - tipWidth - 20 ? y = x-tipWidth : y = x;
+    let winWidth = $(window).width();
+    let tipWidth = $('.tip').width();
+    let ret;
+    if (breakpoint === 'xs') {
+        ret = x > winWidth - tipWidth - 20 ? x - tipWidth : x;
     } else {
-        x > winWidth - tipWidth - 30 ? y = x-45-tipWidth : y = x+10;
+        ret = x > winWidth - tipWidth - 30 ? x - 45 - tipWidth : x + 10;
     }
-    return y;
+    return ret;
 }
+*/
 
 // function to create the chart
 
@@ -101,6 +103,7 @@ function initStreamGraph() {
     var margin = {top: 20, right: 1, bottom: 30, left: 5};
     var width = $('.chart-wrapper').width() - margin.left - margin.right;
     var height = breakHeight(breakpoint) - margin.top - margin.bottom;
+    var lineHeight = height/2;
 
     // chart top used for placing the tooltip
     var chartTop = $(chartInd).offset().top;
@@ -134,6 +137,10 @@ function initStreamGraph() {
         .scale(x)
         .orient("bottom")
         .ticks(d3.timeYears, yearInterval);
+
+    let yAxis = d3.svg.axis()
+        .scale(y)
+        .orient("right");
 
 
     // stacked layout. the order is reversed to get the largest value on top
@@ -172,6 +179,13 @@ function initStreamGraph() {
     let svg = d3.select(chartInd).append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    // init line chart svg
+    let lineSvg = d3.select(chartInd).append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", lineHeight + margin.top + margin.bottom)
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -234,8 +248,6 @@ function initStreamGraph() {
         let data = parseStreamData(countryPair);
         let lineData =parseLineData(countryPair);
 
-
-
         // now we call the data, as the rest of the code is dependent upon data
         // generate our layers
         var layers = stack(nest.entries(data));
@@ -258,6 +270,13 @@ function initStreamGraph() {
             .attr("class", "x axis")
             .attr("transform", "translate(0," + height + ")")
             .call(xAxis);
+
+        svg.append("g")
+            .attr("class","y axis")
+            .attr("transform", "translate(0, 10)")
+            .call(yAxis);
+
+
 
         // abbreviate axis tick text on small screens
         if (breakpoint == 'xs') {
@@ -284,58 +303,68 @@ function initStreamGraph() {
                 .attr("opacity", function(d) {
                     return d.key != event ? fadingFactor : 1;
                 })
-            svg.select("#lineChart").selectAll(".line").transition()
+            d3.select("#lineChart").selectAll(".line").transition()
                 .duration(100)
                 .attr("opacity", function(d) {
                     return d.event != event ? fadingFactor : 1;
                 })
         }
 
-        function focusOff(event) {
+        function focusOver(tooltipContent, mouse) {
+            tooltip
+                .style("left", mouse[0] +"px")
+                .style("top", mouse[1] +"px")
+                .html(tooltipContent)
+                .style("visibility", "visible");
+
+        }
+
+        function focusOff() {
             svg.selectAll(".layer").transition()
                 .duration(100)
                 .attr("opacity", '1');
-            svg.select("#lineChart").selectAll(".line").transition()
+            d3.select("#lineChart").selectAll(".line").transition()
                 .duration(100)
                 .attr("opacity", '1');
+            tooltip.style("visibility", "hidden");
         }
 
         svg.selectAll(".layer")
             .attr("opacity", 1)
-            .on("mouseover", function(d, i) {
+            .on("mouseover", function(d) {
                 focusOn(d.key);
-            }).on("mousemove", function(d, i) {
-
-                var color = d3.select(this).style('fill'); // need to know the color in order to generate the swatch
-
-                mouse = d3.mouse(this);
-                mousex = mouse[0];
-                var invertedx = x.invert(mousex);
-                var xDate = century(invertedx.getYear());
+            }).on("mousemove", function(d) {
+                let content = "";
+                let color = d3.select(this).style('fill'); // need to know the color in order to generate the swatch
+                let mouse = d3.mouse(this);
+                let mousex = mouse[0];
+                let invertedx = x.invert(mousex);
+                let xDate = century(invertedx.getYear());
                 d.values.forEach(function(f){
                     var year = (f.date.toString()).split(' ')[3];
-                    if (xDate == year){
-                        tooltip
-                            .style("left", tipX(mousex) +"px")
-                            .html( "<div class='year'>" + year + "</div><div class='key'><div style='background:" + color + "' class='swatch'>&nbsp;</div>"
-                                + f.key + ': ' + eventCodes[f.key]
-                                + "</div><div class='value'>" + f.value + " " + awardPlural((f.value)) + "</div>" )
-                            .style("visibility", "visible");
+                    if (xDate === year){
+                        content = "<div class='year'>" + year + "</div>"
+                            + "<div class='key'>"
+                            + "<div style='background:" + color + "' class='swatch'>&nbsp;</div>"
+                            + f.key + ': ' + eventCodes[f.key]
+                            + "</div>"
+                            + "<div class='value'>" + f.value + " " + awardPlural((f.value)) + "</div>"
                     }
                 });
+                focusOver(content, [d3.event.pageX, d3.event.pageY]);
             })
-            .on("mouseout", function(d, i) {
-                focusOff(d.key);
-                tooltip.style("visibility", "hidden");
-            });        // vertical line to help orient the user while exploring the streams
+            .on("mouseout", function(d) {
+                focusOff();
+            });
+        // vertical line to help orient the user while exploring the streams
 
         d3.select(chartInd)
             .on("mousemove", function(){
-                mousex = d3.mouse(this);
+                let mousex = d3.mouse(this);
                 mousex = mousex[0] + 5;
                 vertical.style("left", mousex + "px" )})
             .on("mouseover", function(){
-                mousex = d3.mouse(this);
+                let mousex = d3.mouse(this);
                 mousex = mousex[0] + 5;
                 vertical.style("left", mousex + "px")});
 
@@ -366,41 +395,64 @@ function initStreamGraph() {
         t.select('line.guide')
             .attr('transform', 'translate(' + width + ', 0)');
 
-        // draw ling graph
 
-        let max = d3.max(lineData, function(d) {
-            return d3.max(d.data, function(dd){
-                return dd.count;
-            })
-        });
-
-        let liney = d3.scale.linear()
-            .domain([0, max])
-            .range([height-10, 0]);
-
-        let yAxis = d3.svg.axis()
-            .scale(liney)
-            .orient("right");
-
-        svg.append("g")
-            .attr("class","y axis")
-            .attr("transform", "translate(0, 10)")
-            .call(yAxis);
-        let line = d3.svg.line()
-            .x(function(d){ return x(d.year); })
-            .y(function(d){ return liney(d.count); })
-            .interpolate("linear");
-
-        svg.append('g').attr("id","lineChart")
-            .selectAll('path')
-            .data(lineData)
-            .enter()
-            .append("path")
-            .attr("class","line")
-            .attr("d", function(d){ return line(d.data); })
-            .attr('stroke', function(d) {
-                return itemColorRange[d.event];
+        function drawLineChart() {
+            lineSvg.selectAll('g').remove();
+            // draw ling graph
+            let max = d3.max(lineData, function(d) {
+                return d3.max(d.data, function(dd){
+                    return dd.count;
+                })
             });
+
+            let liney = d3.scale.linear()
+                .domain([0, max])
+                .range([lineHeight-10, 0]);
+
+            let yAxis = d3.svg.axis()
+                .scale(liney)
+                .orient("right");
+
+            lineSvg.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + lineHeight + ")")
+                .call(xAxis);
+            lineSvg.append("g")
+                .attr("class","y axis")
+                .attr("transform", "translate(0, 10)")
+                .call(yAxis);
+
+            let line = d3.svg.line()
+                .x(function(d){ return x(d.year); })
+                .y(function(d){ return liney(d.count); })
+                .interpolate("linear");
+            lineSvg.append('g').attr("id","lineChart")
+                .selectAll('path')
+                .data(lineData)
+                .enter()
+                .append("path")
+                .attr("class","line")
+                .attr("d", function(d){ return line(d.data); })
+                .attr('stroke', function(d) {
+                    return itemColorRange[d.event];
+                });
+
+            lineSvg.selectAll(".line")
+                .on("mouseover", function(d) {
+                    focusOn(d.event);
+                }).on("mousemove", function(d) {
+                    let color = d3.select(this).style('stroke'); // need to know the color in order to generate the swatch
+                    let content = "<div class='key'>"
+                        + "<div style='background:" + color + "' class='swatch'>&nbsp;</div>"
+                        + d.event + ': ' + eventCodes[d.event]
+                        + "</div>";
+                    focusOver(content, [d3.event.pageX, d3.event.pageY]);
+                }).on("mouseout", function(d) {
+                    focusOff();
+                });
+        }
+        drawLineChart();
+
     }
 
 

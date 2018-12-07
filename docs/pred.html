@@ -28,7 +28,7 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
       <div class="container">
-        <a class="navbar-brand" href="index.html">Start Bootstrap</a>
+        <a class="navbar-brand" href="index.html">GDELT</a>
         <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
           Menu
           <i class="fas fa-bars"></i>
@@ -99,6 +99,12 @@
                 var scriptElement = document.createElement('script');
                 scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';
                 vizElement.parentNode.insertBefore(scriptElement, vizElement);                </script>
+            We built a logistic regression model to predict future military conflict probabilities in each country using past event breakdowns. Specifically, to predict probability of military conflict between two countries in 2019, the model takes as input the event break-down between the two countries (i.e. number of each event subtypes that happened) in 2018. The probability of military conflict in one country is thus the combined probability of the country having conflict with any other country in 2019.
+            <br/>
+            To train the model, we used all data points from 2013 to 2017 which is 147,727 data points in total. We did 3/7 train/eval split on all these data to evaluate our model and we achieved 97% accuracy on the evaluation set. We then ran the model on all 2018 data to get 2019 predictions. The result is visualized as the heat map above where orange regions have higher probabilities of military conflict in 2019 than green regions.
+            <br/>
+            As we can see from the graph, the world will not change much in 2019 from what it is right now. High concentration of war is going to either happen in or be initiated by the Middle East countries. These are the countries that are involved in war the most in recent years. Next is big countries like US and Russia that are frequently involved with Middle Eastern issues. Western Europe is also a dangerous region because of the frequent terrorist attacks.
+
           </div>
         </div>
         <div class="col-lg-8 col-md-10 mx-auto">
